@@ -1,9 +1,11 @@
 const board = document.querySelector('#board')
 
-const snakeStart = [{x: 10, y: 10}, {x: 10, y: 11}, {x: 10, y: 12}, {x: 10, y: 13}, {x: 10, y: 14}]
+const snakeStart = [{x: 10, y: 10}]
 let snakePosition = snakeStart
 let snakeSpeed = 1 // ilosć odświeżeń na sekundę
 let lastRefreshTime = 0
+let directions = {x: 0, y: 0}
+let lastMove = directions
 
 // requestAnimationFrame lepsza alternatywa dla setInterval
 function refreshAnimation(getCurrentTime){
@@ -11,7 +13,7 @@ function refreshAnimation(getCurrentTime){
 
     // zapobiega nadmiernemu odświeżaniu pozycji - ogranicza jedynie do nieco ponad jednej sekundy
     if((getCurrentTime - lastRefreshTime) / 1000 <= 1 / snakeSpeed) return
-    
+
     updatePosition()
     renderSnake()
     lastRefreshTime = getCurrentTime
@@ -26,9 +28,10 @@ function updatePosition(){
     }
 
     // odświeżenie pozycji na podstawie ostatniego naciśniętego klawisza
-    let changePosition = getControlls()
-    snakePosition[0].x += changePosition.x
-    snakePosition[0].y += changePosition.y
+    console.log(directions);
+    lastMove = directions
+    snakePosition[0].x += directions.x
+    snakePosition[0].y += directions.y
 }
 
 // generuje kwadraty w odpowiednich miejscach na planszy
@@ -45,10 +48,12 @@ function renderSnake(){
     })
 }
     
-// sprawdza ktory klawisz byl ostatnio wcisniety i 
-function getControlls(){
-    x = 1
-    y = 0
-
-    return { x, y }
-}
+// sprawdza ktory klawisz byl ostatnio wcisniety i nakierowuje węża w odpowiednią stronę
+// zawiera także zabezpieczenie, aby nie można wykonać nagłego zwrotu o 180stopni
+window.addEventListener('keydown', e => {
+    console.log(e.code);
+    if(e.code == 'ArrowUp') directions = lastMove.y === 1 ? directions : {x: 0, y: -1 } // oś Y jest odwrócona
+    if(e.code == 'ArrowDown') directions = lastMove.y === -1 ? directions : {x: 0, y: 1} // oś Y jest odwrócona
+    if(e.code == 'ArrowRight') directions = lastMove.x === -1 ? directions : {x: 1, y: 0}
+    if(e.code == 'ArrowLeft') directions = lastMove.x === 1 ? directions : {x: -1, y: 0}
+})
