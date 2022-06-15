@@ -23,7 +23,7 @@ body{
     background-image: url("20x20_chessboard.png");
     background-repeat: no-repeat;
     background-size: cover;
-    border: 0.75vmin solid rgb(220, 0, 0);
+    border: 0.6vmin solid black;
     z-index: 1;
 }
 
