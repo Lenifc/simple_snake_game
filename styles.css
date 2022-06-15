@@ -20,20 +20,38 @@ body{
     grid-template-rows: repeat(20, 1fr);
     grid-template-columns: repeat(20, 1fr);
     background-color: aliceblue;
-    border: 0.5vmin solid black;
+    background-image: url("20x20_chessboard.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    border: 0.75vmin solid rgb(220, 0, 0);
     z-index: 1;
 }
 
-
-#snake{
-    background-color: tomato;
+#snake,
+#apple, 
+#mine{
     border: 0.25vmin solid black;
 }
-
+#snake{
+    background-color: brown;
+}
 #apple{
     background-color: yellowgreen;
-    border: 0.25vmin solid black;
     border-radius: 50%;
+}
+#mine{
+    background-color: black;
+    border-radius: 50%;
+    position: relative;
+}
+
+#mine::after{
+    content: "\274c";
+    position: absolute;
+    top: 0;
+    left: 1px;
+    font-size: 3vmin;
+    text-align: center;
 }
 
 #endGame{
