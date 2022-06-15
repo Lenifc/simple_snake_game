@@ -6,6 +6,7 @@ const restartButton = document.querySelector('#restart')
 const snakeStart = {x: 10, y: 10}
 let snakePosition = [snakeStart]
 let applePosition = { x: Math.floor(Math.random()*20+1), y: Math.floor(Math.random()*20+1)} // generuje jabłko w losowym miejscu po wczytaniu gry
+let minePosition;
 let snakeSpeed = 2 // ilosć odświeżeń na sekundę
 let lastRefreshTime = 0
 let directions = {x: 0, y: 0}
@@ -15,6 +16,7 @@ let applesEaten = 0
 let timerStarted = false
 let timeSurvived = 0
 let lastAppleRender = null
+let lastMineRender = null
 let timestampAtStart
 let timestampAtEnd
 
@@ -31,6 +33,7 @@ function refreshAnimation (getCurrentTime) {
     updatePosition()
     renderSnake()
     renderApple()
+    renderMine()
     lastRefreshTime = getCurrentTime
 }
 requestAnimationFrame(refreshAnimation)
@@ -89,8 +92,20 @@ function renderApple(timeForChange){
     board.appendChild(appleSquare)
 }
 
-function renderMine(){
+function renderMine(timeForChange){
+    if(timeForChange){
+        minePosition = { x: Math.floor(Math.random()*20+1), y: Math.floor(Math.random()*20+1)} // generuje mine w losowym miejscu poza wężem
+        if(checkIfAppleOnSnake(minePosition)) return renderMine(true) // zapobiega przypadkowemu wygenerowaniu miny na wężu
+        lastMineRender = Date.now()
+    }
+    if(minePosition){
+        let mineSquare = document.createElement('div')
+        mineSquare.id = 'mine' // kazdy utworzony element otrzymuje ID, aby móc zaaplikować odpowiednie stylowanie
 
+        mineSquare.style.gridColumnStart = minePosition.x
+        mineSquare.style.gridRowStart = minePosition.y
+        board.appendChild(mineSquare)
+    }
 }
 
 // sprawdza warunki do utrudnienia rozgrywki
@@ -103,11 +118,16 @@ function checkSnakeSpeed(){
 // pierwsza i każda kolejna mina generowana jest po upływie 30 sekund 
 function checkForApplesAndMinesUpdate() {
     let timeToChangeApplePosition
+    let timeToChangeMinePosition
     timeSurvived = Math.floor((Date.now() - timestampAtStart) / 1000)
     if(lastAppleRender) timeToChangeApplePosition = Math.floor((Date.now() - lastAppleRender) / 1000)
+    if(lastMineRender) timeToChangeMinePosition = Math.floor((Date.now() - lastMineRender) / 1000)
 
     if(timeToChangeApplePosition > 10) renderApple(timeForChange = true)
-    if(timeSurvived % 30 == 0) renderMine()
+    if((!timeToChangeMinePosition && 
+        timeSurvived !== 0 && 
+        timeSurvived % 30 == 0) || 
+        timeToChangeMinePosition > 30) renderMine(timeForChange = true)
 }
 
 
@@ -125,6 +145,7 @@ function checkCollision(){
         snakeHead.x < 1 || 
         snakeHead.y > 20 || 
         snakeHead.y < 1 || 
+        checkIfAppleOnSnake(minePosition || 0) ||
         biteHimself(snakeHead)) gameOver = true
 }
 
@@ -196,6 +217,7 @@ function debugConsoleLogs(){
     console.clear()
     console.log("SNAKE'S HEAD POSITION: ", snakePosition[0]);
     console.log('APPLE POSITION: ', applePosition);
+    console.log('MINE POSITION: ', minePosition);
     console.log('CURRENT DIRECTION: ', directions);
     if(snakePosition.length > 3) console.log("SNAKE EAT'S HIMSELF: ", biteHimself(snakePosition[0]));
     console.log('EATEN APPLES: ', applesEaten);
