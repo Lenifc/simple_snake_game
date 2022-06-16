@@ -82,7 +82,7 @@ function renderApple(timeForChange){
         applePosition = { x: Math.floor(Math.random()*20+1), y: Math.floor(Math.random()*20+1)}
         lastAppleRender = Date.now()
     }
-    if(checkIfObjectOnSnake(applePosition, minePositions)) return renderApple(true) // zapobiega nałożeniu się jabłka i miny na jednej pozycji!
+    if(checkIfObjectOnSnake(applePosition, minePositions) || checkIfObjectOnSnake(applePosition, snakePosition)) return renderApple(true) // zapobiega nałożeniu się jabłka i miny i węża na jednej pozycji!
 
     let appleSquare = document.createElement('div')
     appleSquare.id = 'apple' // kazdy utworzony element otrzymuje ID, aby móc zaaplikować odpowiednie stylowanie
