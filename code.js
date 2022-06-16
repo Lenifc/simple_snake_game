@@ -126,7 +126,6 @@ function checkForApplesAndMinesUpdate() {
     timeSurvived = Math.floor((Date.now() - timestampAtStart) / 1000)
     if(lastAppleRender) timeToChangeApplePosition = Math.floor((Date.now() - lastAppleRender) / 1000)
     if(lastMineRender) timeToGenerateNewMine = Math.floor((Date.now() - lastMineRender) / 1000)
-    console.log(timeToGenerateNewMine);
     if(timeToChangeApplePosition > 10) renderApple(timeForChange = true)
     if((!timeToGenerateNewMine &&
         timeSurvived == 30 &&
